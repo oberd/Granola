@@ -172,14 +172,17 @@
     if(metadata) {
         NSMutableArray *serializedArray = [NSMutableArray new];
         for (id key in metadata) {
-            if ([[metadata valueForKey:key] isKindOfClass:[NSDate class]]){
+            if ([[metadata valueForKey: key] isKindOfClass:[HKQuantity class]]) {
+                HKQuantity* quantity = [metadata valueForKey:key];
+                [serializedArray addObject: @{@"key":key,@"value":[OMHSerializer parseUnitFromQuantity:quantity]}];
+            }
+            else if ([[metadata valueForKey:key] isKindOfClass:[NSDate class]]){
                 NSDate *dateMetadataValue = [metadata valueForKey:key];
                 [serializedArray addObject:@{@"key":key,@"value":[dateMetadataValue RFC3339String]}];
             }
             else{
                 [serializedArray addObject:@{@"key":key,@"value":[metadata valueForKey:key]}];
             }
-            
         }
         return @{@"metadata":[serializedArray copy]};
     }
